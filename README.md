@@ -1,4 +1,3 @@
-Link [ https://nova-mart-multi-vendor-fresh-vegeta.vercel.app/]
 # 🥬 NovaMart — Multi-Vendor Fresh Vegetable Marketplace
 
 <p align="center">
