@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaMart — Farm-Fresh Vegetable Marketplace</title>
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+  <header class="top">
+    <button class="back-icon-btn" id="global-back" onclick="showView('home')">&#8592; Back to Home</button>
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M4 20c8 0 16-8 16-16C12 4 4 12 4 20Z" fill="#3FA85A" />
+        <path d="M4 20c4-4 8-8 16-16" stroke="#1B3B2F" stroke-width="1.2" />
+      </svg>
+      NovaMart
+    </div>
+    <nav class="tabs">
+      <button data-view="home" class="active">Shop</button>
+      <button data-view="cart">Cart</button>
+      <button data-view="tracking">Orders</button>
+      <button data-view="vendor">Seller Portal</button>
+    </nav>
+    <div class="header-right">
+      <button class="cart-btn" onclick="showView('cart')">Cart <span class="badge" id="cart-count">0</span></button>
+      <button class="account-btn" id="account-btn" onclick="toggleAccountMenu(event)">
+        <span class="avatar-sm" id="avatar-sm">?</span>
+        <span id="account-label">Sign in</span>
+      </button>
+      <div class="account-menu" id="account-menu"></div>
+    </div>
+  </header>
+  <main>
+
+    <!-- HOME -->
+    <section id="home" class="view active">
+      <div class="hero">
+        <div>
+          <span class="eyebrow" style="color:#9fe0ae">Harvested this morning · 40+ farms</span>
+          <h1>Every vegetable your kitchen needs,<br>delivered fresh today.</h1>
+          <p>From everyday staples to exotic greens — handpicked from local farmers every morning, with nothing sitting
+            in cold storage.</p>
+          <a class="cta" href="#"
+            onclick="document.getElementById('product-grid').scrollIntoView({behavior:'smooth'});return false;">Browse
+            the full mandi ↓</a>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <input type="text" id="search-input" placeholder="Search from 38 vegetables — tomato, methi, drumstick..."
+          oninput="renderGrid(currentFilter, this.value)">
+        <button onclick="renderGrid(currentFilter, document.getElementById('search-input').value)">Search</button>
+      </div>
+
+      <div class="chips" id="chips"></div>
+      <h2>Today's full vegetable list</h2>
+      <div class="count-line" id="count-line"></div>
+      <div class="grid" id="product-grid"></div>
+    </section>
+
+    <!-- PRODUCT -->
+    <section id="product" class="view">
+      <div class="product-wrap">
+        <div class="product-hero" style="background:#FFEDE3" id="product-hero-img"></div>
+        <div>
+          <span class="pill teal" id="product-vendor-pill">Sold by Greenfield Organic Farms · 4.8★ seller</span>
+          <h1 id="product-title">Farm-Fresh Tomatoes</h1>
+          <div class="muted" style="font-size:13px; margin:6px 0 12px;" id="product-meta">★ 4.6 (2,340 reviews) · 1.2k
+            sold this week</div>
+          <div class="price-row"><span class="now" id="product-price">₹39 / kg</span><span class="pill success">Fresh
+              today</span></div>
+
+          <div style="font-weight:700; font-size:13px; margin-bottom:8px;">Pack size</div>
+          <div class="packs" id="product-packs">
+            <div class="pack" onclick="selectPack(this)">Half</div>
+            <div class="pack selected" onclick="selectPack(this)">Full</div>
+            <div class="pack" onclick="selectPack(this)">Double</div>
+          </div>
+
+          <div class="delivery-box">
+            <strong style="font-size:13px;">Delivery to Hyderabad, 500081</strong>
+            <div class="muted" style="font-size:12px; margin-top:2px;">Arrives within 3 hours · Free delivery over ₹299
+            </div>
+          </div>
+
+          <div style="font-weight:700; font-size:13px; margin-bottom:8px;">Quantity</div>
+          <div class="qty"><span onclick="changeProductQty(-1)">-</span><span id="qty-val">1</span><span
+              onclick="changeProductQty(1)">+</span></div>
+
+          <div class="actions">
+            <button class="btn" onclick="addCurrentToCart(false)">Add to Cart</button>
+            <button class="btn solid" onclick="addCurrentToCart(true)">Buy Now</button>
+          </div>
+
+          <h2 style="margin-top:28px;">Customer reviews</h2>
+          <div class="review">"So much fresher than the supermarket — lasted the whole week without going soft." — Anita
+            R. ★5.0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CART -->
+    <section id="cart" class="view">
+      <h1>Your Basket</h1>
+      <p class="muted" style="margin-top:-4px;" id="cart-subtitle">Your basket is empty</p>
+      <div class="cart-layout" style="margin-top:20px;">
+        <div id="cart-items"></div>
+        <div class="card" style="padding:20px;">
+          <h2>Order Summary</h2>
+          <div class="summary-row"><span>Subtotal</span><span id="sum-subtotal">₹0</span></div>
+          <div class="summary-row"><span>Delivery</span><span id="sum-delivery">Free</span></div>
+          <div class="summary-row"><span>Taxes (2%)</span><span id="sum-tax">₹0</span></div>
+          <div class="summary-row total"><span>Total</span><span id="sum-total">₹0</span></div>
+          <button class="btn solid" style="width:100%; margin-top:14px;" id="checkout-btn"
+            onclick="showView('checkout'); renderCheckout();">Proceed to Checkout</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECKOUT -->
+    <section id="checkout" class="view">
+      <h1>Checkout</h1>
+      <p class="muted" style="margin-top:-4px;">Confirm your delivery address and payment method</p>
+      <div class="checkout-layout" style="margin-top:20px;">
+        <div>
+          <div class="card addr-card">
+            <div class="addr-head">
+              <h2 style="margin:0;">Delivery Address</h2>
+              <button class="edit-link" onclick="toggleEditAddress()" id="addr-edit-toggle">Edit</button>
+            </div>
+            <div id="addr-display"></div>
+            <div id="addr-form" class="addr-form" style="display:none;">
+              <div class="field"><label>Full name</label><input type="text" id="addr-name"></div>
+              <div class="field"><label>Phone number</label><input type="text" id="addr-phone"></div>
+              <div class="field"><label>Address line</label><input type="text" id="addr-line"></div>
+              <div class="two-col">
+                <div class="field"><label>City</label><input type="text" id="addr-city"></div>
+                <div class="field"><label>Pincode</label><input type="text" id="addr-pincode"></div>
+              </div>
+              <div class="addr-form-actions">
+                <button class="btn solid" onclick="saveAddress()">Save Address</button>
+                <button class="btn" onclick="toggleEditAddress()">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card pay-section">
+            <h2>Payment Method</h2>
+            <div class="pay-option selected" id="pay-cod" onclick="selectPayment('cod')">
+              <div class="radio"></div>
+              <div>
+                <div class="pay-label">Cash on Delivery</div>
+                <div class="pay-sub">Pay in cash when your basket arrives</div>
+              </div>
+            </div>
+            <div class="pay-option" id="pay-online" onclick="selectPayment('online')">
+              <div class="radio"></div>
+              <div>
+                <div class="pay-label">Online Payment</div>
+                <div class="pay-sub">UPI, Debit/Credit Card or Net Banking</div>
+              </div>
+            </div>
+            <div id="online-details" style="display:none;">
+              <div class="online-methods">
+                <button class="active" id="om-upi" onclick="selectOnlineSub('upi')">UPI</button>
+                <button id="om-card" onclick="selectOnlineSub('card')">Card</button>
+                <button id="om-netbanking" onclick="selectOnlineSub('netbanking')">Net Banking</button>
+              </div>
+              <div class="online-field" id="online-field-input">
+                <input type="text" id="upi-id" placeholder="yourname@upi">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;">
+          <h2>Order Summary</h2>
+          <div id="checkout-items"></div>
+          <div class="summary-row" style="border-top:1px solid var(--border); padding-top:14px; margin-top:6px;">
+            <span>Subtotal</span><span id="co-subtotal">₹0</span></div>
+          <div class="summary-row"><span>Delivery</span><span>Free</span></div>
+          <div class="summary-row"><span>Taxes (2%)</span><span id="co-tax">₹0</span></div>
+          <div class="summary-row total"><span>Total</span><span id="co-total">₹0</span></div>
+          <button class="btn solid" style="width:100%; margin-top:14px;" onclick="placeOrder()">Place Order</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACKING -->
+    <section id="tracking" class="view">
+      <span class="eyebrow" id="track-order-id">Order #FM-5521</span>
+      <h1>Arriving today by 6:30 PM</h1>
+      <div class="track-map" style="margin-top:20px;">LIVE MAP — delivery rider en route</div>
+      <div class="steps">
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <div class="label">Order Placed</div>
+            <div class="time" id="track-time-1">Today, 9:05 AM</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <div class="label">Picked from Farm &amp; Packed</div>
+            <div class="time">Today, 11:20 AM</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <div class="label">Out for Delivery</div>
+            <div class="time">Today, 4:45 PM</div>
+          </div>
+        </div>
+        <div class="step pending">
+          <div class="dot"></div>
+          <div>
+            <div class="label">Delivered</div>
+            <div class="time">Expected 6:30 PM</div>
+          </div>
+        </div>
+      </div>
+      <div class="card order-items-box" id="track-order-items">
+        <strong style="font-size:13px;">Items in this delivery</strong>
+      </div>
+      <div class="card order-items-box" id="track-address-box" style="margin-top:14px;">
+        <strong style="font-size:13px;">Delivery Address</strong>
+      </div>
+      <div class="card order-items-box" id="track-payment-box" style="margin-top:14px;">
+        <strong style="font-size:13px;">Payment Method</strong>
+      </div>
+      <div class="card rider-card">
+        <div class="avatar">SK</div>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:14px;">Kirthan J. · Delivery Partner</div>
+          <div class="muted" style="font-size:12px;">★4.9 · Bike</div>
+        </div>
+        <button class="btn">Call</button>
+      </div>
+    </section>
+
+    <!-- SELLER DASHBOARD -->
+    <section id="vendor" class="view">
+      <h1>Seller Dashboard</h1>
+      <p class="muted" style="margin-top:-4px;">Greenfield Organic Farms · Overview</p>
+      <div class="dash-grid" style="margin-top:20px;">
+        <div class="card kpi">
+          <div class="label">Today's Sales</div>
+          <div class="value">₹18,240</div>
+          <div class="delta" style="color:var(--success)">+9% vs yesterday</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Orders</div>
+          <div class="value">142</div>
+          <div class="delta" style="color:var(--success)">+6%</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Pending Pickups</div>
+          <div class="value">11</div>
+          <div class="delta" style="color:var(--warn)">Action needed</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Rating</div>
+          <div class="value">4.8 / 5</div>
+          <div class="delta" style="color:var(--indigo)">410 reviews</div>
+        </div>
+      </div>
+      <div class="dash-lower">
+        <div class="card" style="padding:20px;">
+          <h2>Sales — Last 7 Days (kg)</h2>
+          <div class="bars" id="bars"></div>
+        </div>
+        <div class="card">
+          <h2 style="padding:20px 18px 0;">Recent Orders</h2>
+          <div id="orders"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGN IN -->
+    <section id="login" class="view">
+      <div class="card auth-wrap">
+        <span class="eyebrow">Welcome back</span>
+        <h1>Sign in to NovaMart</h1>
+        <div class="sub">Track orders, save your basket, and check out faster.</div>
+        <div class="oauth-row">
+          <button class="oauth-btn" onclick="fakeOAuth('Google')">Continue with Google</button>
+          <button class="oauth-btn" onclick="fakeOAuth('Apple')">Continue with Apple</button>
+          <button class="oauth-btn" onclick="fakeOAuth('Phone OTP')">Continue with phone number</button>
+        </div>
+        <div class="divider">OR SIGN IN WITH EMAIL</div>
+        <div class="field"><label for="login-email">Email address</label><input type="email" id="login-email"
+            placeholder="you@example.com"></div>
+        <div class="field"><label for="login-pass">Password</label><input type="password" id="login-pass"
+            placeholder="Enter your password"></div>
+        <div class="row-between">
+          <label class="checkbox-row"><input type="checkbox" checked style="margin:0;"> Keep me signed in</label>
+          <a href="#" onclick="showView('verify-otp');return false;">Forgot password?</a>
+        </div>
+        <button class="btn solid" style="width:100%;" onclick="handleLogin()">Sign In</button>
+        <div class="switch-line">New to NovaMart? <a href="#" onclick="showView('signup');return false;">Create an
+            account</a></div>
+      </div>
+    </section>
+
+    <!-- CREATE ACCOUNT -->
+    <section id="signup" class="view">
+      <div class="card auth-wrap">
+        <span class="eyebrow">Join NovaMart</span>
+        <h1>Create your account</h1>
+        <div class="sub">Fresh vegetables from local farms, delivered same day.</div>
+        <div class="oauth-row">
+          <button class="oauth-btn" onclick="fakeOAuth('Google')">Sign up with Google</button>
+          <button class="oauth-btn" onclick="fakeOAuth('Apple')">Sign up with Apple</button>
+        </div>
+        <div class="divider">OR SIGN UP WITH EMAIL</div>
+        <div class="field"><label for="signup-name">Full name</label><input type="text" id="signup-name"
+            placeholder="Your name"></div>
+        <div class="field"><label for="signup-email">Email address</label><input type="email" id="signup-email"
+            placeholder="you@example.com"></div>
+        <div class="field">
+          <label for="signup-pass">Password</label>
+          <input type="password" id="signup-pass" placeholder="Create a password"
+            oninput="updateStrength(this.value,'')">
+          <div class="strength-bar"><span id="s1"></span><span id="s2"></span><span id="s3"></span><span id="s4"></span>
+          </div>
+          <div class="hint" id="strength-label">Weak</div>
+        </div>
+        <button class="btn solid" style="width:100%;" onclick="startEmailVerification()">Create Account</button>
+        <div class="switch-line">Already have an account? <a href="#" onclick="showView('login');return false;">Sign
+            in</a></div>
+      </div>
+    </section>
+
+    <!-- EMAIL VERIFICATION -->
+    <section id="verify-email" class="view">
+      <div class="card auth-wrap" style="text-align:center;">
+        <div class="verify-icon" style="margin:0 auto 18px;"><svg width="26" height="26" viewBox="0 0 24 24"
+            fill="none">
+            <path d="M3 6h18v12H3V6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            <path d="M3 6l9 7 9-7" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+          </svg></div>
+        <h1>Verify your email</h1>
+        <div class="sub">We've sent a 6-digit code to<br><strong id="verify-email-addr"
+            style="color:var(--text)">you@example.com</strong></div>
+        <div class="otp-row">
+          <input maxlength="1" inputmode="numeric" class="otp-box"><input maxlength="1" inputmode="numeric"
+            class="otp-box"><input maxlength="1" inputmode="numeric" class="otp-box"><input maxlength="1"
+            inputmode="numeric" class="otp-box"><input maxlength="1" inputmode="numeric" class="otp-box"><input
+            maxlength="1" inputmode="numeric" class="otp-box">
+        </div>
+        <button class="btn solid" style="width:100%;" onclick="finishEmailVerification()">Verify Email</button>
+        <div class="switch-line">Didn't get a code? <a href="#" onclick="resendCode();return false;">Resend</a></div>
+      </div>
+    </section>
+
+    <!-- PASSWORD VERIFICATION -->
+    <section id="verify-otp" class="view">
+      <div class="card auth-wrap" style="text-align:center;">
+        <div class="verify-icon" style="margin:0 auto 18px; background:#FFF4D9; color:#8a6400;"><svg width="24"
+            height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" />
+          </svg></div>
+        <h1>Verify it's you</h1>
+        <div class="sub">Enter the code sent to your email to reset your password.</div>
+        <div class="otp-row">
+          <input maxlength="1" inputmode="numeric" class="otp-box"><input maxlength="1" inputmode="numeric"
+            class="otp-box"><input maxlength="1" inputmode="numeric" class="otp-box"><input maxlength="1"
+            inputmode="numeric" class="otp-box"><input maxlength="1" inputmode="numeric" class="otp-box"><input
+            maxlength="1" inputmode="numeric" class="otp-box">
+        </div>
+        <button class="btn solid" style="width:100%;" onclick="showView('reset-password')">Verify Code</button>
+        <div class="switch-line">Didn't get a code? <a href="#" onclick="resendCode();return false;">Resend</a></div>
+      </div>
+    </section>
+
+    <!-- RESET PASSWORD -->
+    <section id="reset-password" class="view">
+      <div class="card auth-wrap">
+        <span class="eyebrow">Almost done</span>
+        <h1>Create a new password</h1>
+        <div class="sub">Use at least 8 characters, with a number and a symbol.</div>
+        <div class="field">
+          <label for="new-pass">New password</label>
+          <input type="password" id="new-pass" placeholder="Enter new password"
+            oninput="updateStrength(this.value,'b')">
+          <div class="strength-bar"><span id="s1b"></span><span id="s2b"></span><span id="s3b"></span><span
+              id="s4b"></span></div>
+          <div class="hint" id="strength-label-b">Weak</div>
+        </div>
+        <div class="field"><label for="confirm-pass">Confirm new password</label><input type="password"
+            id="confirm-pass" placeholder="Re-enter new password"></div>
+        <button class="btn solid" style="width:100%;" onclick="handleLogin()">Save Password &amp; Sign In</button>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast"><span class="dot-ok"></span><span id="toast-msg">Done</span></div>
+  <footer class="site">NovaMart Design @ By Jilla Kirthan · Zidio Development </footer>
+  <script src="script.js"></script>
+</body>
+</html>
